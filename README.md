@@ -1,124 +1,114 @@
-# E-Waste Analysis and Recycling Method Predictor
+E-Waste Analysis and Predicting Recycling Method
+📌 Overview
+This project is a web-based application that helps users identify electronic waste (e-waste) and find the best recycling methods for it. By uploading an image of an electronic device or component, the system can determine:
 
-## 📌 Project Overview
-This project is a Flask web app that helps identify electronic waste and suggests recycling methods. It uses a pretrained AI model (MobileNetV2) to recognize electronic devices in images and provides information about their internal parts and how to recycle them.
+What kind of electronic device it is.
 
-## 🚀 Features
-- Detects electronic devices in uploaded images.
-- Shows internal components of detected devices.
-- Suggests proper recycling methods based on stored data.
-- Easy-to-use web app where users upload images for analysis.
+Whether it is e-waste or not.
 
-## Methodology
-1. Data Collection
+How it can be recycled properly.
 
-Dataset Source: The dataset consists of images of various electronic devices and their internal components collected from Kaggle and other sources.
-Categories: The dataset includes images of electronic waste items such as laptops, keyboards, microwaves, mobile phones, and internal components like resistors, capacitors, and PCBs.
-Data Organization: The collected images are stored in structured folders categorized by device type.
+It uses two artificial intelligence (AI) models to analyze images and provide results based on a pre-defined recycling knowledge base.
 
-2. Data Preprocessing
+🔹 Key Features
+✅ Easy Image Upload – Users can upload a picture of an electronic item.
+✅ Device Detection – AI predicts what device or component is in the image.
+✅ E-Waste Classification – If the device is unknown, another AI model checks if it is e-waste.
+✅ Recycling Suggestions – The system provides proper recycling methods based on the detected item.
+✅ User-Friendly Web Interface – No need for coding skills, just upload an image and get results!
 
-Image Resizing: All images are resized to a uniform size (e.g., 224x224 or 256x256 pixels) to ensure compatibility with the CNN model.
-Normalization: Pixel values are normalized between 0 and 1 to improve model performance.
-Data Augmentation: Augmentations such as rotation, flipping, and brightness adjustments are applied to increase dataset variability.
+📍 How It Works – Step by Step
+Step 1: Upload an Image
+The user uploads an image of an electronic device (e.g., mobile phone, battery, PCB, etc.) using the website.
 
-3. Model Selection & Training
+Step 2: Image Preprocessing
+The system prepares the image before analyzing it:
+🔹 The image is resized to 224x224 pixels to match the AI model’s requirements.
+🔹 It is converted into numerical values so that the AI can understand it.
 
-Pretrained CNN Model: A pretrained model like MobileNetV2  is used for feature extraction and classification.
-Fine-Tuning: The final layers of the model are modified to classify e-waste categories and predict internal components.
-Training Process:
-Loss Function: Cross-entropy loss is used for classification.
-Optimizer: Adam or SGD is used to optimize learning.
-Evaluation Metrics: Accuracy, precision, recall, and F1-score are calculated to assess model performance.
-Training Environment: The model is trained using TensorFlow/Keras or PyTorch on a GPU-enabled system.
+Step 3: Device Detection (First AI Model)
+The system first tries to recognize the electronic device in the image using a pre-trained AI model (MobileNetV2).
 
-4. Model Evaluation
-   
-The trained model is evaluated using a test dataset.
-A confusion matrix is generated to analyze misclassifications.
-The model's performance is fine-tuned by adjusting hyperparameters if necessary.
+If the system finds a match with high confidence, it will label the device and move to the next step.
 
-5. Flask Web Application
+If it does not find a match, the system proceeds to Step 4.
 
-User Input: Users can upload an image from the test_images folder.
-Detection System:
-The CNN model classifies the uploaded image as an electronic device.
-The system fetches the corresponding internal components and recycling methods from recycling_info.json.
-Output Display:
-The detected device, its internal components, and their recommended recycling methods are displayed in the UI.
-The system provides technical recycling terms such as "Pyrometallurgical Processing" for PCBs.
+Step 4: E-Waste Classification (Second AI Model)
+If the first model fails to detect the device, another AI model is used to check:
 
-6. JSON-Based Recycling Information Storage
-   
-Data Storage: A JSON file (e_waste_recycling.json) stores mappings between detected devices, their internal components, and recycling methods.
-API Endpoint: A Flask API endpoint (/recycling-info?device=<device_name>) returns internal components and recycling methods for a detected device.
+Is the item e-waste?
 
-7. Deployment & Future Enhancements
+Or is it a non-electronic item?
 
-Deployment: The system is deployed on a local Flask server.
-Future Enhancements:
-Expansion of the dataset to include more internal components.
-Integration with real-time object detection models.
-Implementation of a mobile-friendly UI for broader accessibility.
+If the system classifies it as e-waste, it moves to the next step to find recycling information.
 
+Step 5: Recycling Recommendations
+Once the system knows what the device is, it checks a predefined database (recycling_info.json) to provide information on:
 
-## 🛠️ Technologies Used
-- Python (Programming Language)
-- Flask (For the web application)
-- MobileNetV2 (AI model for detecting devices)
-- JSON (For storing recycling information)
-- VS Code (For coding and development)
+How to recycle the device properly.
 
-## 📂 Project Structure
-```
-E-WASTE-ANALYSIS-AND-PREDICTING-RECYCLING-METHOD/
-│-- static/
-│   ├── data/
-│   │   ├── e_waste_recycling.json  # Stores device and recycling details
-│-- test_images/  # Sample images for testing
-│-- templates/
-│   ├── index.html  # Web app interface
-│-- model/
-│   ├── mobilenetv2_model.h5  # AI model file
-│-- app.py  # Main program to run the web app
-│-- requirements.txt  # List of necessary software packages
-│-- README.md  # Project details
-```
+Which parts (internal components) need special recycling.
 
-## 🔧 How to Use
-1. Download the project
-   ```sh
-   git clone https://github.com/Dhanalekshmi26/E-WASTE-ANALYSIS-AND-PREDICTING-RECYCLING-METHOD.git
-   cd E-WASTE-ANALYSIS-AND-PREDICTING-RECYCLING-METHOD
-   ```
-2. Set up Python environment (optional)
-   ```sh
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use 'venv\Scripts\activate'
-   ```
-3. Install required software
-   ```sh
-   pip install -r requirements.txt
-   ```
-4. Run the web app
-   ```sh
-   python app.py
-   ```
-5. Open the web app
-   - Go to: `http://127.0.0.1:5000/` in your browser.
-   - Upload an image of an electronic device.
-   - See its components and recycling methods.
+Suggested recycling methods (e.g., mechanical separation, pyro-metallurgical recovery, hydrometallurgical processing).
 
-## 🔍 How It Works
-1. User uploads an image of an electronic device through the web app.
-2. MobileNetV2 model processes the image and detects the electronic device.
-3. The system fetches internal components of the detected device from `e_waste_recycling.json`.
-4. Recycling methods are displayed, explaining how to properly recycle each component.
+Step 6: Displaying the Results
+The system generates a response showing:
 
+The detected device name (if found).
 
-## 📜 License
-This project is open-source and available under the [MIT License](LICENSE).
+Whether it is e-waste or non-e-waste.
 
----
+Recycling methods if available.
 
+The uploaded image for reference.
+
+📂 Project Structure
+bash
+Copy
+Edit
+📦 E-Waste Detection System  
+│── 📜 app.py                 # Main application file  
+│── 📜 class_labels.json       # List of device names AI can detect  
+│── 📜 recycling_info.json     # Recycling details for each device  
+│── 📜 thresholds.py           # Confidence thresholds for predictions  
+│── 📜 ewaste_mobilenetv2.h5   # First AI model (device detection)  
+│── 📜 E-Waste_Non-Ewaste_classifier.h5  # Second AI model (e-waste check)  
+│── 📂 static/uploads/         # Folder to store uploaded images  
+│── 📂 templates/index.html    # Webpage for uploading images  
+🛠 How to Set Up and Run the Project
+1️⃣ Install Required Libraries
+Before running the project, install the necessary Python packages:
+
+bash
+Copy
+Edit
+pip install flask tensorflow numpy opencv-python
+2️⃣ Run the Application
+Launch the web application by running:
+
+bash
+Copy
+Edit
+python app.py
+3️⃣ Open the Web Interface
+After running the command, open a browser and visit:
+
+cpp
+Copy
+Edit
+http://127.0.0.1:5000/
+From here, users can upload images and get predictions.
+
+🔮 Future Enhancements
+🚀 Improve Accuracy – Train AI models with more data.
+📸 Real-Time Camera Input – Allow users to scan devices live.
+☁ Cloud-Based Storage – Save past results for user reference.
+🔄 Multi-Language Support – Help users worldwide understand recycling methods.
+
+📢 Why This Project Matters
+💡 E-waste is one of the fastest-growing waste streams.
+♻ Proper recycling helps protect the environment.
+⚡ AI-based automation makes classification easy for everyone!
+
+This system helps users make informed decisions about recycling electronic items by providing AI-powered analysis in a simple and easy-to-use web platform.
 
