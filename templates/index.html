@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Waste Detection System</title>
+    <script>
+        function uploadAndPredict() {
+            let formData = new FormData();
+            let fileInput = document.getElementById('fileInput').files[0];
+
+            if (!fileInput) {
+                alert("Please select a file.");
+                return;
+            }
+
+            formData.append("file", fileInput);
+
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                let resultsDiv = document.getElementById("results");
+                let uploadedImageDiv = document.getElementById("uploadedImage");
+
+                if (data.error) {
+                    resultsDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
+                    uploadedImageDiv.innerHTML = "";
+                } else {
+                    let predictionHTML = `<h3>Prediction Results:</h3>`;
+                    
+                    if (data.prediction) {
+                        data.prediction.forEach(item => {
+                            predictionHTML += `<p><strong>Device:</strong> ${item.device}</p>`;
+                            if (item.confidence) {
+                                predictionHTML += `<p><strong>Confidence:</strong> ${item.confidence}</p>`;
+                            }
+                            if (item.internal_components) {
+                                predictionHTML += `<p><strong>Internal Components:</strong> ${item.internal_components.join(', ')}</p>`;
+                            }
+                            if (item.recycling_methods) {
+                                predictionHTML += `<p><strong>Recycling Methods:</strong> <pre>${item.recycling_methods}</pre></p>`;
+                            }
+                        });
+                    } else {
+                        predictionHTML += `<p>${data.message}</p>`;
+                    }
+
+                    resultsDiv.innerHTML = predictionHTML;
+                    uploadedImageDiv.innerHTML = `<h3>Uploaded Image:</h3><img src="${data.image_url}" width="300" alt="Uploaded Image">`;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</head>
+<body>
+    <h1>E-Waste Detection System</h1>
+    <input type="file" id="fileInput">
+    <button onclick="uploadAndPredict()">Upload & Predict</button>
+
+    <div id="results"></div>
+    <div id="uploadedImage"></div>
+</body>
+</html>

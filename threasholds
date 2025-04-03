@@ -1,0 +1,53 @@
+import os
+import numpy as np
+import cv2
+from tensorflow.keras.models import load_model
+
+# Define base directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Load both models
+model_main_path = os.path.join(BASE_DIR, "ewaste_mobilenetv2.h5")  # Main Model
+model_second_path = os.path.join(BASE_DIR, r"E-WASTE-ANALYSIS-AND-PREDICTING-RECYCLING-METHOD/mobilenetv2_ewaste_classifier.h5")  # Second Model
+
+model_main = load_model(model_main_path)
+print("✅ Main Model Loaded:", model_main_path)
+
+model_second = load_model(model_second_path)
+print("✅ Second Model Loaded:", model_second_path)
+
+# Function to preprocess image
+def load_and_preprocess_image(image_path):
+    image = cv2.imread(image_path)
+    if image is None:
+        print(f"⚠️ Error: Could not read image {image_path}")
+        return None
+    image = cv2.resize(image, (224, 224))  # Resize as per model input size
+    image = image / 255.0  # Normalize
+    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    return image
+
+# Set different thresholds for both models
+main_threshold = 0.5
+second_threshold = 0.6
+
+# Test an image
+image_path = os.path.join(BASE_DIR, "test_images", "sample.jpg")  # Change filename as needed
+image = load_and_preprocess_image(image_path)
+
+if image is not None:
+    prediction_main = model_main.predict(image)[0][0]
+    prediction_second = model_second.predict(image)[0][0]
+
+    print(f"🟢 Main Model Confidence: {prediction_main:.3f}")
+    print(f"🟡 Second Model Confidence: {prediction_second:.3f}")
+
+    if prediction_main > main_threshold:
+        print("✅ Main Model: Detected as E-Waste!")
+    else:
+        print("❌ Main Model: Not E-Waste!")
+
+    if prediction_second > second_threshold:
+        print("✅ Second Model: Detected as E-Waste!")
+    else:
+        print("❌ Second Model: Not E-Waste!")
